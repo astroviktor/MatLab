@@ -40,7 +40,7 @@ while(~converged && it<=maxit)
         warning(' Derivative close to zero, terminating iterations with failed convergence... ');
         break;
     else
-        root=root-((fval*derivative)/(derivative^2-derivative*derivative2));    % update root estimate
+        root=root-((fval.*derivative)./(derivative.^2-fval.*derivative2));    % update root estimate
         fval=f(root);                  % see how far off we are from zero...
         if (verbose)
             fprintf(' iteration: %d; root:  %f + %f i; function value: %f, derivative:  %f \n',it,real(root),imag(root),fval,derivative);

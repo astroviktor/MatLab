@@ -17,7 +17,7 @@ end %if
 if (nargin<5)
     verbose=false;
 end %if
-epsilon=.1;
+epsilon=.01;
 %% Newton iterations
 it=1;
 root=x0;
