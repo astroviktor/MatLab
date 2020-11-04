@@ -28,7 +28,7 @@ a=backsub(Mmod(ord,:));
 %linear fit
 for i=1:length(x)
     f(i)=a(1)+a(2)*x(i);
-    e(i)=ynoisy(i)-f(i);
+    e(i)=f(i)-ynoisy(i);
 end
 S=e*e';
 
@@ -39,9 +39,24 @@ a2=backsub(Mmod2(ord,:));
 %quadratic fit
 for i=1:length(x)
     f2(i)=a2(1)+a2(2)*x(i)+a2(3)*x(i)^2;
-    e2(i)=ynoisy(i)-f2(i);
+    e2(i)=f2(i)-ynoisy(i);
 end
 S2=e2*e2';
+
+%cubic solution
+M3=[1*length(x) xi xi2 xi3;xi xi2 xi3 xi4;xi2 xi3 xi4 xi5;xi3 xi4 xi5 xi6];
+b3=[yi;yixi;yixi2;yixi3];
+[Mmod3,ord]=Gauss_elim(M3,b3);
+a3=backsub(Mmod3(ord,:));
+%cubic fit
+for i=1:length(x)
+    f3(i)=a3(1)+a3(2)*x(i)+a3(3)*x(i)^2+a3(4)*x(i)^3;
+    e3(i)=f3(i)-ynoisy(i);
+end
+S3=e3*e3';
+
+%checking results for cubic
+poly=polyfit(x,ynoisy,3);
 
 %outputs
 figure(1)
@@ -49,37 +64,33 @@ plot(x,ynoisy,'-b','LineWidth',0.2)
 hold on
 plot(x,f,'--g','LineWidth',1.5)
 hold on
-plot(x,f2,'-r','LineWidth',2)
+plot(x,f2,'-r','LineWidth',1.5)
+hold on
+plot(x,f3,'-y','LineWidth',2)
+hold on
+plot(x,polyval(poly,x),'--k','LineWidth',1.2)
 title('Linear Least Square Fit')
 xlabel('x')
 ylabel('y(x)')
-legend('Noisy values','Linear fit','Quadratic Fit')
+legend('Noisy values','Linear fit','Quadratic Fit','Cubic Fit','MatLab polyfit for quadratic')
 figure(2)
-plot(x,e,'--k','LineWidth',0.2)
+plot(x,e,'-k','LineWidth',0.2)
 hold on
 plot(x,e2,'-m','LineWidth',0.2)
+hold on
+plot(x,e3,'-g','LineWidth',0.2)
 title('Error comparation')
 xlabel('x')
 ylabel('Error')
-legend('Linear fit error','Quadratic fit error')
+legend('Linear fit error','Quadratic fit error','Cubic fit error')
 disp('Linear fit residual:')
 disp(S)
 disp('Quadratic fit residual:')
 disp(S2)
+disp('Cubic fit residual:')
+disp(S3)
 
 %% Part c) and d)
-
-%cubic solution
-M3=[1*length(x) xi xi2 xi3;xi xi2 xi3 xi4;xi2 xi3 xi4 xi5;xi3 xi4 xi5 xi6];
-b3=[yi;yixi;yixi2;yixi3];
-[Mmod3,ord]=Gauss_elim(M3,b3);
-a3=backsub(Mmod3(ord,:));
-%quadratic fit
-for i=1:length(x)
-    f3(i)=a3(1)+a3(2)*x(i)+a3(3)*x(i)^2+a3(4)*x(i)^3;
-    e3(i)=ynoisy(i)-f3(i);
-end
-S3=e3*e3';
 
 stat=chisquared(f,ynoisy,sigmay,1);
 stat2=chisquared(f2,ynoisy,sigmay,2);

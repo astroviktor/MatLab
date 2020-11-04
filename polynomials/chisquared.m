@@ -12,7 +12,7 @@ sigma = uncertainty of data
 v = number of degrees of freedom in the fit
 %}
 
-v=length(y)-(n-1);
+v=length(y)-(n+1);
 xv2=0;
 for i=1:length(y)
     %evaluatin chi-sq. stat
