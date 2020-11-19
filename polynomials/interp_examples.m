@@ -18,11 +18,20 @@ M=[ones(4,1),xvec(:),yvec(:),xvec(:).*yvec(:)];
 avec=backsub(Mmod(order,:));
 finterpmanual=avec(1)+avec(2)*x1+avec(3)*y1+avec(4)*x1*y1;
 
+<<<<<<< HEAD
 % Matlab version
 finterp=interp2(X,Y,f,x1,y1);
 
 %Visual interpolation point:  x1,y1
 ;
+=======
+% Matlab version of bilinear interpolation
+finterp=interp2(X,Y,f,x1,y1);
+
+%Visual interpolation point:  x1,y1
+figure(1);
+imagesc(x,y,f);
+>>>>>>> 2782018b8d64a2ee8ff310ac767e4e9c7df7c489
 axis xy;
 xlabel('x');
 ylabel('y');
@@ -35,7 +44,11 @@ hold off;
 
 
 %% Illustrate cubic spline approximations using Matlab functions
+<<<<<<< HEAD
 x=linspace(-5,5,15);
+=======
+x=linspace(-5,5,500);
+>>>>>>> 2782018b8d64a2ee8ff310ac767e4e9c7df7c489
 y=sin(x);
 figure(2);
 plot(x,y,'o','MarkerSize',20);
@@ -49,3 +62,11 @@ plot(x2,y2,'.');
 y2true=sin(x2);
 plot(x2,y2true,'-');
 
+<<<<<<< HEAD
+=======
+
+
+
+
+
+>>>>>>> 2782018b8d64a2ee8ff310ac767e4e9c7df7c489

@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 % Part b)
+=======
+% Evaluate performance and scaling of Gaussian elimination and Jacobi iteration
+%    by solving systems of different size and timing the solves
+>>>>>>> 2782018b8d64a2ee8ff310ac767e4e9c7df7c489
 
 % Evaluate performance and scaling of Gaussian elimination, Jacobi
 % iteration and Thomas algorithm
@@ -21,18 +26,30 @@ for in=1:numel(nvals)
         tend=cputime;
         testtimesgauss(in)=testtimesgauss(in)+(tend-tstart)/lrep;
     end %for
+<<<<<<< HEAD
 %     disp([' GE solution for system of size ',num2str(nlarge),' takes average time ',num2str(testtimesgauss(in)),' s']);
 end %for
 
 figure(1);
 plot(nvals,testtimesgauss,'-bo','LineWidth',1.2)
+=======
+    disp([' GE solution for system of size ',num2str(nlarge),' takes average time ',num2str(testtimes(in)),' s']);
+end %for
+
+figure(1);
+plot(nvals,testtimes,'o','LineWidth',2,'MarkerSize',20,'MarkerFaceColor','blue')
+>>>>>>> 2782018b8d64a2ee8ff310ac767e4e9c7df7c489
 xlabel('system size');
 ylabel('time to solve (s)');
 title('Empirically Determined Performance');
 
 disp('Start of tests for Jacobi iteration');
 tol=1e-9;
+<<<<<<< HEAD
 testtimesjacobi=zeros(size(nvals));
+=======
+testtimes=zeros(size(nvals));
+>>>>>>> 2782018b8d64a2ee8ff310ac767e4e9c7df7c489
 for in=1:numel(nvals)
     nlarge=nvals(in);
     Blarge=diag(-1*ones(nlarge-1,1),-1)+diag(-1*ones(nlarge-1,1),1)+diag(4*ones(nlarge,1),0);    %this must be diagonally dominant or else the method won't converge
@@ -43,18 +60,29 @@ for in=1:numel(nvals)
         x0=randn(nlarge,1);
         [xit,iterations]=Jacobi(x0,Blarge,blarge,tol,false);
         tend=cputime;
+<<<<<<< HEAD
         testtimesjacobi(in)=testtimesjacobi(in)+(tend-tstart)/lrep;
     end %for
 %     disp([' JI solution for system of size ',num2str(nlarge),' takes average time ',num2str(testtimesjacobi(in)),' s']);
+=======
+        testtimes(in)=testtimes(in)+(tend-tstart)/lrep;
+    end %for
+    disp([' JI solution for system of size ',num2str(nlarge),' takes average time ',num2str(testtimes(in)),' s']);
+>>>>>>> 2782018b8d64a2ee8ff310ac767e4e9c7df7c489
 end %for
 
 figure(1);
 hold on
+<<<<<<< HEAD
 plot(nvals,testtimesjacobi,'-ro','LineWidth',1.2)
+=======
+plot(nvals,testtimes,'^','LineWidth',2,'MarkerSize',20,'MarkerFaceColor','blue')
+>>>>>>> 2782018b8d64a2ee8ff310ac767e4e9c7df7c489
 xlabel('system size');
 ylabel('time to solve (s)');
 legend('Gauss elim.','Jacobi it.')
 title('Empirically Determined Performance');
+<<<<<<< HEAD
 
 testtimesthomas=zeros(size(nvals));
 disp('Start of Thomas method (tridiagonal)');
@@ -85,3 +113,5 @@ xlabel('system size');
 ylabel('time to solve (s)');
 legend('Gauss elim.','Jacobi it.','Thomas alg.')
 title('Empirically Determined Performance');
+=======
+>>>>>>> 2782018b8d64a2ee8ff310ac767e4e9c7df7c489
