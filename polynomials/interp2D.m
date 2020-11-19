@@ -6,6 +6,7 @@ function finterp=interp2D(fvec,xvec,yvec,xprime,yprime)
     [Mmod,ord]=Gauss_elim(M,b);
     aa=backsub(Mmod(ord,:));
     %interpolated value
+   
     finterp=aa(1)+aa(2)*xprime+aa(3)*yprime+aa(4)*xprime*yprime;
-
+        
 end

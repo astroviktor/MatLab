@@ -8,52 +8,10 @@ clear all; close all; clc
 
 load test_lsq.mat
 addpath ../linear_algebra
-% sumations
-xi=sum(x);
-xi2=sum(x.^2);
-xi3=sum(x.^3);
-xi4=sum(x.^4);
-xi5=sum(x.^5);
-xi6=sum(x.^6);
-yixi=sum(x.*ynoisy);
-yixi2=sum(x.^2.*ynoisy);
-yixi3=sum(x.^3.*ynoisy);
-yi=sum(ynoisy);
-%matrix form
-M=[1*length(x) xi;xi xi2];
-b=[yi;yixi];
-%gaussian elimination + back substitution
-[Mmod,ord]=Gauss_elim(M,b);
-a=backsub(Mmod(ord,:));
-%linear fit
-for i=1:length(x)
-    f(i)=a(1)+a(2)*x(i);
-    e(i)=f(i)-ynoisy(i);
-end
-S=e*e';
 
-M2=[1*length(x) xi xi2;xi xi2 xi3;xi2 xi3 xi4];
-b2=[yi;yixi;yixi2];
-[Mmod2,ord]=Gauss_elim(M2,b2);
-a2=backsub(Mmod2(ord,:));
-%quadratic fit
-for i=1:length(x)
-    f2(i)=a2(1)+a2(2)*x(i)+a2(3)*x(i)^2;
-    e2(i)=f2(i)-ynoisy(i);
-end
-S2=e2*e2';
-
-%cubic solution
-M3=[1*length(x) xi xi2 xi3;xi xi2 xi3 xi4;xi2 xi3 xi4 xi5;xi3 xi4 xi5 xi6];
-b3=[yi;yixi;yixi2;yixi3];
-[Mmod3,ord]=Gauss_elim(M3,b3);
-a3=backsub(Mmod3(ord,:));
-%cubic fit
-for i=1:length(x)
-    f3(i)=a3(1)+a3(2)*x(i)+a3(3)*x(i)^2+a3(4)*x(i)^3;
-    e3(i)=f3(i)-ynoisy(i);
-end
-S3=e3*e3';
+[f,e,S]=leastsquares(x,ynoisy,1);
+[f2,e2,S2]=leastsquares(x,ynoisy,2);
+[f3,e3,S3]=leastsquares(x,ynoisy,3);
 
 %checking results for cubic
 poly=polyfit(x,ynoisy,3);
@@ -72,7 +30,7 @@ plot(x,polyval(poly,x),'--k','LineWidth',1.2)
 title('Linear Least Square Fit')
 xlabel('x')
 ylabel('y(x)')
-legend('Noisy values','Linear fit','Quadratic Fit','Cubic Fit','MatLab polyfit for quadratic')
+legend('Noisy values','Linear fit','Quadratic Fit','Cubic Fit','MatLab polyfit for cubic')
 figure(2)
 plot(x,e,'-k','LineWidth',0.2)
 hold on
@@ -90,19 +48,157 @@ disp(S2)
 disp('Cubic fit residual:')
 disp(S3)
 
-%% Part c) and d)
+%% Functions
+%---------------------------------------------------------------------%
 
-stat=chisquared(f,ynoisy,sigmay,1);
-stat2=chisquared(f2,ynoisy,sigmay,2);
-stat3=chisquared(f3,ynoisy,sigmay,3);
+function [f,e,S]=leastsquares(x,y,n)
+% This functions performs a least squares approximation of a polynomial of
+% degree n
+%{
+Legend
+n     -- degree of polynomial
+x     -- x points
+y     -- function noisy values
+f     -- approximated function
+e     -- error vector
+S     -- final residual
+%}
+N=length(x);
+%sumations of x^(ith) for matrix M
+for i=1:2*n
+    xi(i)=sum(x.^(i));
+end
+%rhs vector (b)
+yi(1)=sum(y);
+for i=2:n+1
+    yi(i)=sum(x.^(i-1).*y);
+end
+%matrix M to solve for
+M(1,1)=N;
+for i=2:n+1
+    M(1,i)=xi(i-1);
+end
+for i=2:n+1
+    M(i,:)=[xi(i-1:n+i-1)];
+end
+%performing Gaussian Elimination and back-substitution
+[Mmod,ord]=Gauss_elim(M,yi');
+a=backsub(Mmod(ord,:));
+%calculating the approximated function 
+for i=1:N
+    f(i)=a(1);
+    for j=1:n
+       f(i)=f(i)+a(j+1)*x(i)^j;
+    end
+        %error vector
+       e(i)=f(i)-y(i);
+end
+%residual
+S=e*e';
+
+end
+
+%------------------------------------------------------------------------%
+
+function [Amod,ord]=Gauss_elim(A,b,verbose)
+
+% [Amod,ord]=Gauss_elim(A,b,verbose)
+%
+% This function perform elimination with partial pivoting and scaling as
+% described in Section 1.3.2 in the Hoffman textbook (viz. it does Gaussian
+% elimination).  Note that the ordering which preserves upper triangularity
+% is stored in the ord output variable, such that the upper triangular output
+% is given by row-permuted matrix Amod(ord,:).  The verbose flag can be set to
+% true or false (or omitted, default=false) in order to print out what the algirthm
+% is doing for each elimination step.
+
+%Parse the inputs, throw an error if something is obviously wrong with input data
+narginchk(2,3);
+if (nargin<3)
+    verbose=false;
+end %if
+
+%Need to error check for square input.  
+
+%Allocation of space and setup
+Amod=cat(2,A,b);          %make a copy of A and modify with RHS of system
+n=size(A,1);              %number of unknowns
+ord=(1:n)';               %ord is a mapping from input row being operated upon to the actual row that represents in the matrix ordering
+
+%Elimination with scaled, partial pivoting for matrix Amod; note all row
+%indices must be screen through ord mapping.
+for ir1=1:n-1
+    if (verbose)
+        disp('Starting Gauss elimination from row:  ');
+        disp(ir1);
+        disp('Current state of matrix:  ');
+        disp(Amod(ord,:));
+    end %if
+    
+    %check scaled pivot elements to see if reordering should be done
+    pivmax=0;
+    ipivmax=ir1;      %max pivot element should never be higher than my current position
+    for ipiv=ir1:n    %look only below my current position in the matrix
+        pivcurr=abs(Amod(ord(ipiv),ir1))/max(abs(Amod(ord(ipiv),:)));      %note that columns never get reordered...
+        if (pivcurr>pivmax)
+            pivmax=pivcurr;
+            ipivmax=ipiv;     %this stores the index into ord for row having largest pivot element
+        end %if
+    end %for
+    
+    %reorder if situation calls for it
+    if (ipivmax ~= ir1)
+        itmp=ord(ir1);
+        ord(ir1)=ord(ipivmax);
+        ord(ipivmax)=itmp;
+        
+        if (verbose)
+            disp('Interchanging rows:  ');
+            disp(itmp);
+            disp(' and:  ');
+            disp(ord(ir1));
+            disp('Current matrix state after interchange:  ');
+            disp(Amod(ord,:));
+        end %if
+    end %if
+    
+    %perform the elimination for this row, former references to ir1 are now
+    %mapped through the ord array
+    for ir2=ir1+1:n
+        fact=Amod(ord(ir2),ir1);
+        Amod(ord(ir2),ir1:n+1)=Amod(ord(ir2),ir1:n+1)-fact/Amod(ord(ir1),ir1).*Amod(ord(ir1),ir1:n+1);    %only need columns ahead of where we are in matrix
+    end %for
+    
+    if (verbose)
+        disp('Following elimination for row:  ');
+        disp(ir1);
+        disp(' matrix state:  ');
+        disp(Amod(ord,:));
+    end %if
+end %for
+
+end %function
+
+%-------------------------------------------------------------------------%
+
+function x=backsub(A)
+
+% This function performs back substitution on an upper triangular matrix that has
+% been modified by concatenating the RHS of the system.  
+% Note that B is assumed to be upper triangular at this point.
 
 
+n=size(A,1);                   %number of unknowns in the system
+x=zeros(n,1);                  %space in which to store our solution vector
+x(n)=A(n,n+1)/A(n,n);          %finalized solution for last variable, resulting from upper triangular conversion
 
-disp('According to the statistic chi-squared approach, for the above function we can see how the cubic method works best (i.e. closest value to 1)')
-disp('Chi-squared values:')
-disp('n=1')
-disp(stat)
-disp('n=2')
-disp(stat2)
-disp('n=3')
-disp(stat3)
+for ir1=n-1:-1:1
+    x(ir1)=A(ir1,n+1);       %assume we're only dealing with a single right-hand side here.
+    fact=A(ir1,ir1);         %diagonal element to be divided through doing subs for the ir2 row
+    for ic=ir1+1:n
+        x(ir1)=x(ir1)-A(ir1,ic)*x(ic);
+    end %for
+    x(ir1)=x(ir1)/fact;      %divide once at the end to minimize number of ops
+end %for
+
+end %function

@@ -20,29 +20,48 @@ y0=0;
 maxit=1000;  %max number of iterations allowed
 tol=1e-10;   %tolerance to achieve
 [rootx1,rooty1,it]=newton2D_exact(f,gradf,g,gradg,x0,y0,maxit,tol);
+%checking for very small values to approximate to 0, for output purposes
+if rootx1<1e-5
+    rootx1=0;
+elseif rooty1<1e-5
+    rooty1=0;
+end
 %second 2 roots
 %initial guesses
 x0=0;
 y0=1.5;
 [rootx2,rooty2]=newton2D_exact(f,gradf,g,gradg,x0,y0,maxit,tol);
-%solution matrix: first column=x solutions, second column=y solutions
-sol=[rootx1 rooty1;rootx2 rooty2];
-
-%cleaning values smaller than 10^-8 (for output purposes)
-for i=1:size(sol,1)
-    for j=1:size(sol,1)
-    if abs(sol(i,j))<1e-8
-        sol(i,j)=0;
-    end
-    end
+%checking for very small values to approximate to 0, for output purposes
+if rootx2<1e-5
+    rootx2=0;
+elseif rooty2<1e-5
+    rooty2=0;
 end
+x0=1.6-0.6i;
+y0=-1-0.5i;
+[rootx3,rooty3]=newton2D_exact(f,gradf,g,gradg,x0,y0,maxit,tol);
+x0=1.6+0.6i;
+y0=-0.8+0.5i;
+[rootx4,rooty4]=newton2D_exact(f,gradf,g,gradg,x0,y0,maxit,tol);
+%solution matrix: first column=x solutions, second column=y solutions
 %outputs
 fprintf("System roots:\n")
-fprintf('x=%1.2f\t',sol(1,1))
-fprintf('y=%1.2f\n\n',sol(1,2))
-fprintf('x=%1.2f\t',sol(2,1))
-fprintf('y=%1.2f\n\n',sol(2,2))
-
+disp('x1:')
+disp(rootx1)
+disp('y1:')
+disp(rooty1)
+disp('x2:')
+disp(rootx2)
+disp('y2:')
+disp(rooty2)
+disp('x3:')
+disp(rootx3)
+disp('y3:')
+disp(rooty3)
+disp('x4:')
+disp(rootx4)
+disp('y4:')
+disp(rooty4)
 %% Part b)
 
 %functions (3D problem)
