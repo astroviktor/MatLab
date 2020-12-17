@@ -94,12 +94,12 @@ for j=1:length(x)
     for i=1:length(x)
     check(i,j)=sqrt(xx(i,j)^2+yy(i,j)^2);
     if check(i,j)<a
-        divphix(i,j)=-8996887682;
-        divphiy(i,j)=-8996887682;
+        divphix(i,j)=-8987742438;
+        divphiy(i,j)=-8987742438;
+        
     elseif check(i,j)>=a
-        divphix(i,j)=8987742438*(3*xx(i,j)^2/(xx(i,j)^2+yy(i,j)^2)^(5/2))-(1/(xx(i,j)^2+yy(i,j)^2)^(3/2));
-        divphiy(i,j)=8987742438*(3*yy(i,j)^2/(xx(i,j)^2+yy(i,j)^2)^(5/2))-(1/(xx(i,j)^2+yy(i,j)^2)^(3/2));
-
+        divphix(i,j)=((3*xx(i,j)^2/(xx(i,j)^2+yy(i,j)^2)^(5/2))-(1/(xx(i,j)^2+yy(i,j)^2)^(3/2)))/8987742438;
+        divphiy(i,j)=((3*yy(i,j)^2/(xx(i,j)^2+yy(i,j)^2)^(5/2))-(1/(xx(i,j)^2+yy(i,j)^2)^(3/2)))/8987742438;
     end
     end
 end
@@ -148,6 +148,32 @@ for i=1:length(x)
 end
 %computing W_e (electrostatic energy)
 We=-0.5*I;
-disp('Electrostatic energy value (We):')
+disp('Electrostatic energy value (We) (Triple Integral):')
 disp(We)
+
+%-------------------------------------------------------------------------%
+%% Functions
+
+function [I] = Trap(fun,lmin,lmax,N)
+%this function implements numerical integration via trapezoidal method
+
+
+% For the simplest case, the calculation is done by the formula
+if N==1
+    I= 0.5*(lmax-lmin)*2*fun(1);
+else
+
+% For the multiple application, a sum is performed taking advantage of the 
+% vector nature of the evaluation
+    I=(0.5*(lmax-lmin)/N)*(fun(1)+fun(end)+2*sum(fun(2:end-1)));   
+
+end
+end
+
+
+
+
+
+
+
 

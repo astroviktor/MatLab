@@ -5,9 +5,9 @@ clc; clear all; close all
 %% Exercise 1
 %Part a)
 %initial data
-mu0=4*pi*10^(-7);             %[H/m]
-I=10;                      %[A]
-a=.005;                    %[m]
+mu0=4*pi*10^(-7);               %[H/m]
+I=10;                           %[A]
+a=.005;                         %[m]
 x=linspace(-3*a,3*a,1000);
 y=linspace(-3*a,3*a,1000);[xx,yy]=meshgrid(x,y);
 for j=1:length(x)
@@ -23,7 +23,7 @@ for j=1:length(x)
     end
     end
 end
-%outputs
+%outputs and figures
 figure(1)
 pcolor(xx,yy,Bx)
 shading flat
@@ -55,7 +55,7 @@ for i=1:length(x2)
     end
 end
 end
-%outputs
+%outputs and figures
 figure(3)
 quiver(xx2,yy2,Bx2,By2)
 title('Quiver plot')
@@ -77,13 +77,13 @@ gradx(:,1)=(By(:,2)-By(:,1))/dx;
 gradx(:,length(x))=(By(:,length(x))-By(:,length(x)-1))/dx;
 %y component of gradient Bx
 for i=2:length(y)-1
-    grady(:,i)=(Bx(:,i+1)-Bx(:,i-1))/2/dy; 
+    grady(i,:)=(Bx(i+1,:)-Bx(i-1,:))/2/dy; 
 end
-grady(:,1)=(Bx(:,2)-Bx(:,1))/dy;
-grady(:,length(y))=(Bx(:,length(y))-Bx(:,length(y)-1))/dy;
+grady(1,:)=(Bx(2,:)-Bx(1,:))/dy;
+grady(length(y),:)=(Bx(length(y),:)-Bx(length(y)-1,:))/dy;
 %calculating curl (z-component only)
 curlz=gradx-grady;
-%outputs
+%outputs and figures
 figure(4)
 imagesc(x,y,curlz)
 shading flat
@@ -103,11 +103,13 @@ for i=1:length(x)
         By3(i,j)= 0.08;
     elseif sqrt(xx(i,j)^2+yy(i,j)^2)>=a
         Bx3(i,j)= (yy(i,j)^2-xx(i,j)^2)/500000/(xx(i,j)^2+yy(i,j)^2)^2;
-        By3(i,j)= Bx3(i,j);
+        By3(i,j)= (yy(i,j)^2-xx(i,j)^2)/500000/(xx(i,j)^2+yy(i,j)^2)^2;
     end
 end
 end
+%summing components
 curlzhand=-Bx3+By3;
+%outputs and figures
 figure(5)
 imagesc(x,y,curlzhand)
 shading flat
@@ -128,50 +130,39 @@ r=rx+ry;
 %outputs
 figure(6)
 pcolor(xx,yy,Bx)
+hold on
 shading flat
+plot(rx(1,:),ry(1,:),'LineWidth',2)
 xlabel('x')
 ylabel('y')
-title('Plot for B_{x}')
+title('Plot for B_{x} with parametric path r(\phi)')
 colorbar
 
 figure(7)
 pcolor(xx,yy,By)
 shading flat
+hold on
+plot(rx(1,:),ry(1,:),'LineWidth',2)
 xlabel('x')
 ylabel('y')
-title('Plot for B_{y}')
+title('Plot for B_{y} with parametric path r(\phi)')
 colorbar
 
 % Part b)
-for j=1:length(x)
-    for i=1:length(x)
-    %condition checking
-    if sqrt(rx(i,j)^2+ry(i,j)^2)<a
-        %x and y component of magnetic field
-        Bx4(i,j)= (mu0*I/2/pi/a/a)*sqrt(rx(i,j)^2+ry(i,j)^2)*(-ry(i,j)/sqrt(rx(i,j)^2+ry(i,j)^2));
-        By4(i,j)= (mu0*I/2/pi/a/a)*sqrt(rx(i,j)^2+ry(i,j)^2)*(rx(i,j)/sqrt(rx(i,j)^2+ry(i,j)^2));
-    elseif sqrt(rx(i,j)^2+ry(i,j)^2)>=a
-        Bx4(i,j)= (mu0*I/2/pi)/sqrt(rx(i,j)^2+ry(i,j)^2)*(-ry(i,j)/sqrt(rx(i,j)^2+ry(i,j)^2));
-        By4(i,j)= (mu0*I/2/pi)/sqrt(rx(i,j)^2+ry(i,j)^2)*(rx(i,j)/sqrt(rx(i,j)^2+ry(i,j)^2));
-    end
-    end
+for i=1:length(rx)
+        Bx4(i)= (mu0*I/2/pi)/sqrt(rx(1,i)^2+ry(1,i)^2)*(-ry(1,i)/sqrt(rx(1,i)^2+ry(1,i)^2));
+        By4(i)= (mu0*I/2/pi)/sqrt(rx(1,i)^2+ry(1,i)^2)*(rx(1,i)/sqrt(rx(1,i)^2+ry(1,i)^2));
 end
+
 %outputs
 figure(8)
-pcolor(xx,yy,Bx4)
-shading flat
+plot(x,Bx4,'-r','LineWidth',2)
 xlabel('x')
-ylabel('y')
-title('Plot for B_{x}')
-colorbar
-
-figure(9)
-pcolor(xx,yy,By4)
-shading flat
-xlabel('x')
-ylabel('y')
-title('Plot for B_{y}')
-colorbar
+ylabel('B(x(\phi),y(\phi))')
+title('Plot for B(x(\phi),y(\phi))')
+hold on
+plot(x,By4,'-b','LineWidth',2)
+legend('B_x','B_y')
 
 % Part c)
 
@@ -197,9 +188,9 @@ dr=drx+dry;
 dr_dphi=dx_dphi+dy_dphi;
 %outputs and plots
 figure(10)
-plot(phi,dr_dphi(1,1:end),'-b','LineWidth',2)
+plot(drx(1,:),dry(1,:),'-b','LineWidth',2)
 hold on
-plot(phi,dr(1,1:end),'--r','LineWidth',1.5)
+plot(dx_dphi(1,:),dy_dphi(1,:),'--r','LineWidth',1.5)
 title('Derivative of r(\phi) path')
 xlabel('\phi')
 ylabel('\phi')
@@ -207,12 +198,30 @@ zlabel('r(\phi)')
 legend('Numerical derivative','Hand-computed derivative')
 
 % Part d)
-
+%integration
 B=Bx4+By4;
+%calculating the function
 f=B*dr_dphi/mu0;
-I=0;
-for i=1:length(phi)
-    I=I+Trap(f,0,2*pi,1000);
-end
+I=I+Trap(f(1,1:end),0,2*pi,1000);
 disp('Auxiliary Magnetic Field (integral value):')
 disp(I)
+
+%-------------------------------------------------------------------------%
+
+%% Functions
+
+function [I] = Trap(fun,lmin,lmax,N)
+%this function implements numerical integration via trapezoidal method
+
+
+% For the simplest case, the calculation is done by the formula
+if N==1
+    I= 0.5*(lmax-lmin)*2*fun(1);
+else
+
+% For the multiple application, a sum is performed taking advantage of the 
+% vector nature of the evaluation
+    I=(0.5*(lmax-lmin)/N)*(fun(1)+fun(end)+2*sum(fun(2:end-1)));   
+
+end
+end
