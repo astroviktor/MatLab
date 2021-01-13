@@ -16,7 +16,7 @@ tau=1/(2*pi/(2*dx))^2/lambda;    %diffusion time scale for the equation, based o
 %dt=tau/5;              %time step
 
 dtmargin=1/lambda/2*dx^2;
-dt=25*dtmargin;
+dt=0.5*dtmargin;
 tmin=0;
 tmax=1024*tau;          %go out to three times the diffusion time scale for the smallest possible mode
 t=tmin:dt:tmax;

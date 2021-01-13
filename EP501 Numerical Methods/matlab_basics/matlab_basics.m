@@ -5,7 +5,6 @@
 %This script requires files containing the functions fun1D and fun2D.  
 
 
-
 %% Things illustrated during class
 
 % installing matlab
@@ -13,7 +12,6 @@
 % complex number manipulation, abs, angle, real, imaginary
 % random number generation:  rand, randn, histograms
 % publishing matlab content
-
 
 
 %% Create some 1D and 2D data for plotting
@@ -27,7 +25,6 @@ y1=fun1D(x,1,1,3);
 y2=fun1D(x,1.5,-1,2);
 Z1=fun2D(X,Y,2,0,0,3,4);
 Z2=fun2D(X,Y,5,2,-2,2,2);
-
 
 
 %% Plot various data
@@ -104,9 +101,8 @@ print('-depsc2','fig3.eps');
 A=[1,  2, 4; ...    %notice that the ellipses in matlab allows you to continue a line
    2, 12,-2; ...
    5, 26, 5];       %A(i,j) is the coefficient of the ith variable in the jth equation
-B=A';               %transpose of A
-
 b=[18; 9; 14];      %this is the column vector representing the RHS of the system
+B=A';               %transpose of A
 
 % Some basic commands to display variables
 disp('A = ');
@@ -173,6 +169,7 @@ a1=10:-1:1;                        %count backward
 a1=a1(:);                          %convert to column vector
 disp(diag(a1,0));
 
+% LU decomp.
 disp('LU decomposition of A (A=L*U):  ')
 [L,U]=lu(A);
 disp('L = ');
@@ -180,6 +177,7 @@ disp(L);
 disp('U = ');
 disp(U);
 
+% Eigenvalues
 disp('Eigenvalues of A = ');
 [psi,lambda]=eig(A);
 disp(lambda);
@@ -189,41 +187,40 @@ disp(psi(:,2));
 disp(psi(:,3));
 
 
-% %% Special functions, illustration of using greek letters in strings
-% t=linspace(-3,3,100);          %indep variable for gamma and erf
-% rho=linspace(0,10,100);        %radial independent variable
-% costh=linspace(-1,1,100);      %cos(theta) variable
-% 
-% figure(4);
-% 
-% subplot(2,2,1);
-% plot(t,gamma(t));              %gamma function
-% xlabel('t');
-% ylabel('\Gamma (t)');
-% 
-% subplot(2,2,2);
-% plot(t,erf(t));                %error function
-% xlabel('t');
-% ylabel('erf(t)');
-% 
-% subplot(2,2,3);
-% plot(rho,besselj(0,rho),rho,besselj(1,rho),rho,besselj(2,rho),rho,besselj(3,rho))   %first arg to bessel function is order, second is indep variable
-% xlabel('\rho');
-% ylabel('J_\nu(\rho)');
-% 
-% %associated legendre function
-% P0=legendre(0,costh);
-% P1data=legendre(1,costh);
-% P1=P1data(1,:);                %pick the m=0 associated legendre function which is an ordinatry legendre polynomial
-% P2data=legendre(2,costh);
-% P2=P2data(1,:);
-% P3data=legendre(3,costh);
-% P3=P3data(3,:);
-% subplot(2,2,4);
-% plot(costh,P0,costh,P1,costh,P2,costh,P3);
-% xlabel('cos \theta');
-% ylabel('P_n (cos \theta)');
+%% Special functions, illustration of using greek letters in strings
+t=linspace(-3,3,100);          %indep variable for gamma and erf
+rho=linspace(0,10,100);        %radial independent variable
+costh=linspace(-1,1,100);      %cos(theta) variable
 
+figure(4);
+
+subplot(2,2,1);
+plot(t,gamma(t));              %gamma function
+xlabel('t');
+ylabel('\Gamma (t)');
+
+subplot(2,2,2);
+plot(t,erf(t));                %error function
+xlabel('t');
+ylabel('erf(t)');
+
+subplot(2,2,3);
+plot(rho,besselj(0,rho),rho,besselj(1,rho),rho,besselj(2,rho),rho,besselj(3,rho))   %first arg to bessel function is order, second is indep variable
+xlabel('\rho');
+ylabel('J_\nu(\rho)');
+
+%associated legendre function
+P0=legendre(0,costh);
+P1data=legendre(1,costh);
+P1=P1data(1,:);                %pick the m=0 associated legendre function which is an ordinatry legendre polynomial
+P2data=legendre(2,costh);
+P2=P2data(1,:);
+P3data=legendre(3,costh);
+P3=P3data(3,:);
+subplot(2,2,4);
+plot(costh,P0,costh,P1,costh,P2,costh,P3);
+xlabel('cos \theta');
+ylabel('P_n (cos \theta)');
 
 
 %% Demonstration of precision issues in matlab and formatted print statements (avoid subtracting number of vastly different magnitudes...)

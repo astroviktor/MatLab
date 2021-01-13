@@ -1,11 +1,15 @@
 function [root,it,success]=newton_exact(f,fprime,x0,maxit,tol,verbose)
-
+% 
 % root=newton_exact(f,fprime)
-%
+% 
 % finds a set of roots corresponding to the function f (input as a handle)
 % given a function which computes the derivative
 
-%% Error checking of input
+<<<<<<< HEAD
+% Error checking of input
+=======
+%% Error checking of input and setting of default values
+>>>>>>> 2782018b8d64a2ee8ff310ac767e4e9c7df7c489
 narginchk(3,6);   %check for correct number of inputs to function
 if (nargin<4)
     maxit=100;       %maximum number of iterations allowed
@@ -18,14 +22,14 @@ if (nargin<6)
 end %if
 
 
-%% Make sure we don't start at an inflection point with zero derivative
+% Make sure we don't start at an inflection point with zero derivative
 if (abs(fprime(x0))<tol)
     warning(' Attempting to start Newton iterations near an inflection point, you may wish to restart with a different guess...');
     x0=x0+1;   %bump the guess a ways off of initial value to see if we can get anything sensible
 end %if
 
 
-%% Newton iterations
+% Newton iterations
 it=1;
 root=x0;
 fval=f(root);
